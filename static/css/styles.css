@@ -1,0 +1,1669 @@
+/* ── Reset & Base ─────────────────────────────────────── */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Styled scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+}
+
+:root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface-2: #242734;
+    --border: #2e3244;
+    --text: #e4e4e7;
+    --text-muted: #9294a0;
+    --accent: #bf5700;
+    --accent-hover: #d4691a;
+    --success: #22c55e;
+    --danger: #ef4444;
+    --radius-sm: 4px;
+    --radius: 6px;
+    --radius-lg: 8px;
+    --radius-xl: 12px;
+    --transition: 0.15s;
+    --course-1: #4a90d9;
+    --course-2: #e67e22;
+    --course-3: #2ecc71;
+    --course-4: #9b59b6;
+    --course-5: #e74c3c;
+    --course-6: #1abc9c;
+    --course-7: #f39c12;
+    --course-8: #3498db;
+    --course-9: #e91e63;
+    --course-10: #00bcd4;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    min-height: 100vh;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ── Header ──────────────────────────────────────────── */
+header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 24px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+
+header h1 {
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.semester-select {
+    appearance: none;
+    -webkit-appearance: none;
+    background: var(--accent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='white'/%3E%3C/svg%3E") no-repeat right 10px center;
+    color: white;
+    padding: 4px 28px 4px 12px;
+    border-radius: var(--radius-xl);
+    font-size: 0.8rem;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    outline: none;
+}
+
+.semester-select option {
+    background: var(--surface);
+    color: var(--text);
+}
+
+/* ── Layout ──────────────────────────────────────────── */
+main {
+    display: flex;
+    height: calc(100vh - 57px);
+}
+
+.sidebar {
+    width: 300px;
+    min-width: 300px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow-y: auto;
+}
+
+.content {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ── Panels ──────────────────────────────────────────── */
+.panel {
+    background: var(--surface-2);
+    border-radius: var(--radius-lg);
+    padding: 14px;
+    border: 1px solid var(--border);
+}
+
+.panel h2 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* ── Input Group ─────────────────────────────────────── */
+.input-group {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.input-group .btn {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.input-group input {
+    flex: 1;
+    min-width: 0;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px 10px;
+    color: var(--text);
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color var(--transition);
+}
+
+.input-group input:focus {
+    border-color: var(--accent);
+}
+
+.input-group input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+/* ── Buttons ─────────────────────────────────────────── */
+.btn {
+    border: none;
+    border-radius: var(--radius);
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background var(--transition), opacity var(--transition);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: var(--accent-hover);
+}
+
+.btn-generate {
+    width: 100%;
+    background: var(--accent);
+    color: white;
+    padding: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.btn-generate:hover:not(:disabled) {
+    background: var(--accent-hover);
+}
+
+.btn-nav {
+    background: var(--surface-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 6px 14px;
+}
+
+.btn-nav:hover:not(:disabled) {
+    background: var(--border);
+}
+
+.btn-small {
+    background: var(--surface-2);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    font-size: 0.8rem;
+}
+
+.btn-small:hover {
+    background: var(--border);
+    color: var(--text);
+}
+
+/* ── Course List ─────────────────────────────────────── */
+.course-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.course-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg);
+    border-radius: var(--radius);
+    padding: 6px 10px;
+    font-size: 0.85rem;
+}
+
+.course-list li .course-color {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+.course-list li .course-name {
+    flex: 1;
+    min-width: 0;
+    font-weight: 500;
+}
+
+.course-list li .course-topic {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--text-muted);
+}
+
+.total-hours {
+    margin-top: 8px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-align: right;
+    padding: 0 4px;
+}
+
+.course-list li .edit-btn,
+.course-list li .remove-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+    opacity: 0;
+    transition: opacity var(--transition);
+    flex-shrink: 0;
+}
+
+.course-list li:hover .edit-btn,
+.course-list li:hover .remove-btn {
+    opacity: 1;
+}
+
+.course-list li .edit-btn {
+    font-size: 0.85rem;
+}
+
+.course-list li .remove-btn {
+    font-size: 1.1rem;
+}
+
+.course-list li .edit-btn:hover {
+    color: var(--accent);
+}
+
+.course-list li .remove-btn:hover {
+    color: var(--danger);
+}
+
+.course-edit-input {
+    background: var(--bg);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-size: 0.85rem;
+    padding: 2px 6px;
+    width: 100%;
+    outline: none;
+    font-family: inherit;
+}
+
+/* ── Options ─────────────────────────────────────────── */
+.option-section {
+    margin-top: 10px;
+}
+
+.option-label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.day-off-row {
+    display: flex;
+    gap: 4px;
+}
+
+.day-toggle {
+    cursor: pointer;
+}
+
+.day-toggle input {
+    display: none;
+}
+
+.day-toggle span {
+    display: inline-block;
+    width: 32px;
+    text-align: center;
+    padding: 4px 0;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-weight: 500;
+    background: var(--bg);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    transition: all var(--transition);
+}
+
+.day-toggle input:checked + span {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+
+.time-range-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.time-select {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 4px 6px;
+    color: var(--text);
+    font-size: 0.8rem;
+    outline: none;
+}
+
+.time-sep {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* ── Breaks ──────────────────────────────────────────── */
+.breaks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.break-entry {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--bg);
+    border-radius: var(--radius);
+    padding: 6px 8px;
+    flex-wrap: wrap;
+    position: relative;
+}
+
+.break-entry select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 2px 4px;
+    color: var(--text);
+    font-size: 0.75rem;
+    outline: none;
+    min-width: 0;
+}
+
+.break-entry .break-days {
+    flex: 0 0 100%;
+    margin-bottom: 2px;
+}
+
+.break-entry .break-time {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.break-entry .break-sep {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.break-entry .break-remove {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0 2px;
+    line-height: 1;
+    flex-shrink: 0;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    opacity: 0;
+    transition: opacity var(--transition);
+}
+
+.break-entry:hover .break-remove {
+    opacity: 1;
+}
+
+.break-entry .break-remove:hover {
+    color: var(--danger);
+}
+
+/* ── Checkbox ────────────────────────────────────────── */
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    accent-color: var(--accent);
+}
+
+/* ── Auth Status ─────────────────────────────────────── */
+.auth-panel-v2 {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.auth-help {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+.auth-help a {
+    color: var(--accent);
+    text-decoration: underline;
+}
+
+.auth-help.hidden {
+    display: none;
+}
+
+.auth-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.auth-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.auth-dot.connected {
+    background: var(--success);
+}
+
+.auth-dot.disconnected {
+    background: var(--danger);
+}
+
+/* ── Status Area ─────────────────────────────────────── */
+.status-area {
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    min-height: 20px;
+}
+
+.status-area .error {
+    color: var(--danger);
+}
+
+.status-area .success {
+    color: var(--success);
+}
+
+.status-area .conflict-list {
+    list-style: none;
+    margin-top: 4px;
+    padding-left: 8px;
+    font-size: 0.8rem;
+}
+
+.status-area .conflict-list li {
+    color: var(--text);
+    padding: 2px 0;
+}
+
+.status-area .conflict-list li::before {
+    content: "- ";
+    color: var(--danger);
+}
+
+.status-area .spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── Schedule Nav ────────────────────────────────────── */
+.schedule-nav {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 10px 16px;
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.schedule-nav.hidden {
+    display: none;
+}
+
+.nav-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.nav-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.schedule-counter {
+    font-size: 0.85rem;
+    font-weight: 500;
+    min-width: 120px;
+    text-align: center;
+}
+
+.nav-options {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.sort-select {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 4px 8px;
+    color: var(--text);
+    font-size: 0.85rem;
+    outline: none;
+}
+
+/* ── Calendar Container ──────────────────────────────── */
+.calendars-container {
+    display: flex;
+    gap: 16px;
+    flex: 1;
+}
+
+.empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    color: var(--text-muted);
+    font-size: 1rem;
+    text-align: center;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-xl);
+    padding: 40px;
+}
+
+/* ── Calendar Grid ───────────────────────────────────── */
+.calendar-wrapper {
+    flex: 1;
+    min-width: 0;
+}
+
+.calendar-grid {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--surface);
+}
+
+.calendar-header {
+    display: grid;
+    grid-template-columns: 60px repeat(5, 1fr);
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+}
+
+.calendar-header .day-header {
+    text-align: center;
+    padding: 8px 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    border-left: 1px solid var(--border);
+}
+
+.calendar-header .corner {
+    padding: 8px 4px;
+}
+
+.calendar-body {
+    position: relative;
+    display: grid;
+    grid-template-columns: 60px repeat(5, 1fr);
+}
+
+.time-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.time-label {
+    height: 48px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 0 6px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    transform: translateY(-7px);
+}
+
+.day-column {
+    position: relative;
+    border-left: 1px solid var(--border);
+}
+
+.hour-line {
+    height: 48px;
+    border-bottom: 1px solid var(--border);
+}
+
+.hour-line.half {
+    border-bottom: 1px solid rgba(46, 50, 68, 0.5);
+}
+
+/* ── Course Blocks ───────────────────────────────────── */
+.course-block {
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    border-radius: var(--radius-sm);
+    padding: 3px 6px;
+    font-size: 0.7rem;
+    line-height: 1.3;
+    overflow: hidden;
+    cursor: pointer;
+    z-index: 1;
+    border-left: 3px solid rgba(255,255,255,0.3);
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.course-block .block-title {
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.course-block .block-time,
+.course-block .block-location,
+.course-block .block-instructor {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 0.85;
+    font-size: 0.65rem;
+}
+
+.course-block .block-unique {
+    position: absolute;
+    bottom: 2px;
+    right: 3px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    opacity: 0.5;
+    cursor: pointer;
+    padding: 1px 4px;
+    border-radius: var(--radius-sm);
+    transition: opacity var(--transition), background var(--transition);
+}
+
+.course-block .block-unique:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.course-block .block-unique.copied {
+    opacity: 1;
+    color: #4ade80;
+}
+
+/* ── Status badges ──────────────────────────────────── */
+.block-status {
+    position: absolute;
+    top: 2px;
+    right: 3px;
+    font-size: 0.55rem;
+    font-weight: 600;
+    padding: 0 3px;
+    border-radius: var(--radius-sm);
+    text-transform: uppercase;
+    line-height: 1.4;
+}
+
+.block-status-default {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.block-status-bad {
+    background: rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+}
+
+.info-status {
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 1px 4px;
+    border-radius: var(--radius-sm);
+    text-transform: uppercase;
+    margin-left: 2px;
+}
+
+.info-status-default {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-muted);
+}
+
+.info-status-bad {
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--danger);
+}
+
+/* ── Course block hover ──────────────────────────────── */
+.course-block:hover {
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+/* Compact blocks for short time slots (< ~45min) */
+.course-block.compact .block-location,
+.course-block.compact .block-instructor {
+    display: none;
+}
+
+.course-block.compact .block-time {
+    font-size: 0.6rem;
+}
+
+.course-block.compact .block-unique {
+    display: none;
+}
+
+.course-block.compact .block-status {
+    font-size: 0.5rem;
+}
+
+/* ── Compare Nav (legacy, replaced by .compare-nav-inline) ── */
+
+/* ── Responsive ──────────────────────────────────────── */
+@media (max-width: 900px) {
+    main {
+        flex-direction: column;
+        height: auto;
+    }
+    .sidebar {
+        width: 100%;
+        min-width: 0;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        max-height: 50vh;
+    }
+    .calendars-container {
+        flex-direction: column;
+    }
+    .calendar-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .calendar-grid {
+        min-width: 500px;
+    }
+    .nav-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .nav-actions {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 600px) {
+    .calendar-grid {
+        min-width: 450px;
+    }
+    .course-block {
+        font-size: 0.6rem;
+        padding: 2px 4px;
+    }
+    .course-block .block-time,
+    .course-block .block-location,
+    .course-block .block-instructor {
+        font-size: 0.55rem;
+    }
+}
+
+/* ── Modal ───────────────────────────────────────────── */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.modal-overlay.hidden {
+    display: none;
+}
+
+.modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    width: 600px;
+    max-width: 90vw;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-header h2 {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.4rem;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+}
+
+.modal-close:hover {
+    color: var(--text);
+}
+
+.modal-body {
+    padding: 14px 18px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.modal-body .input-group {
+    margin-bottom: 10px;
+}
+
+/* ── Search tabs ───────────────────────────────────── */
+.search-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 12px;
+    border-bottom: 2px solid var(--border);
+}
+
+.search-tab {
+    flex: 1;
+    padding: 8px 12px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+}
+
+.search-tab:hover {
+    color: var(--text);
+}
+
+.search-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+}
+
+.search-tab-content {
+    display: none;
+}
+
+.search-tab-content.active {
+    display: block;
+}
+
+/* ── Prompt modal ───────────────────────────────────── */
+.prompt-modal {
+    width: 400px;
+}
+
+.prompt-field {
+    margin-bottom: 10px;
+}
+
+.prompt-field label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.prompt-field input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 8px 10px;
+    color: var(--text);
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color var(--transition);
+}
+
+.prompt-field input:focus {
+    border-color: var(--accent);
+}
+
+.prompt-hint {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 10px;
+    padding: 8px 10px;
+    background: var(--bg);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+}
+
+.prompt-hint ol {
+    margin: 4px 0 0 16px;
+}
+
+.prompt-error {
+    font-size: 0.8rem;
+    color: var(--danger);
+    margin-bottom: 8px;
+}
+
+.prompt-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+/* ── Search Results ──────────────────────────────────── */
+.search-results {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.search-result {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    transition: border-color var(--transition);
+}
+
+.search-result:hover {
+    border-color: var(--accent);
+}
+
+.search-result-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.search-result-name {
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.search-result-link {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.search-result-link:hover {
+    text-decoration: underline;
+}
+
+.search-result-title {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.search-result-meta {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.search-result .btn {
+    flex-shrink: 0;
+}
+
+/* ── Professor Filters ───────────────────────────────── */
+.prof-filter-course {
+    margin-bottom: 10px;
+}
+
+.prof-filter-course:last-child {
+    margin-bottom: 0;
+}
+
+.prof-filter-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.prof-filter-name {
+    flex: 1;
+}
+
+.prof-filter-count {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 400;
+}
+
+.prof-filter-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-left: 18px;
+}
+
+.prof-filter-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: var(--text);
+    cursor: pointer;
+    padding: 2px 0;
+}
+
+.prof-filter-item input[type="checkbox"] {
+    accent-color: var(--accent);
+    flex-shrink: 0;
+}
+
+.prof-filter-item .prof-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.prof-filter-item .prof-sections {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    flex-shrink: 0;
+}
+
+.prof-filter-item .rmp-btn {
+    font-size: 0.65rem;
+    color: var(--accent);
+    text-decoration: none;
+    padding: 1px 4px;
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+    line-height: 1;
+    opacity: 0.7;
+    transition: opacity var(--transition);
+}
+
+.prof-filter-item .rmp-btn:hover {
+    opacity: 1;
+    background: var(--accent);
+    color: white;
+}
+
+/* ── GPA Buttons & Grade Popup ─────────────────────── */
+.gpa-btn {
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 1px 5px;
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+    line-height: 1.4;
+    border: none;
+    cursor: pointer;
+    transition: filter var(--transition);
+}
+
+.gpa-btn:hover {
+    filter: brightness(1.3);
+}
+
+.gpa-high {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+}
+
+.gpa-mid {
+    background: rgba(250, 204, 21, 0.15);
+    color: #facc15;
+}
+
+.gpa-low {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}
+
+.prof-filter-header .gpa-btn {
+    font-size: 0.7rem;
+    margin-left: auto;
+}
+
+/* Grade distribution popup */
+.grade-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.grade-popup {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 20px 24px;
+    width: 420px;
+    max-width: 90vw;
+}
+
+.grade-popup-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.grade-popup-header h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.grade-popup-stats {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 20px;
+}
+
+.grade-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.grade-stat-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.grade-stat-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.grade-stat-value.gpa-high { color: #4ade80; }
+.grade-stat-value.gpa-mid { color: #facc15; }
+.grade-stat-value.gpa-low { color: #f87171; }
+
+.grade-histogram {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 120px;
+    padding-top: 8px;
+}
+
+.grade-bar-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    justify-content: flex-end;
+}
+
+.grade-bar-value {
+    font-size: 0.55rem;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+    white-space: nowrap;
+}
+
+.grade-bar {
+    width: 100%;
+    background: var(--accent);
+    border-radius: 2px 2px 0 0;
+    min-height: 2px;
+    transition: height 0.3s ease;
+}
+
+.grade-bar-label {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+    white-space: nowrap;
+}
+
+/* ── Save button ────────────────────────────────────── */
+.btn-save {
+    background: var(--surface-2);
+    color: var(--success);
+    border: 1px solid var(--success);
+    padding: 4px 12px;
+    border-radius: var(--radius);
+    font-size: 0.8rem;
+    margin-left: 8px;
+}
+
+.btn-save:hover:not(:disabled) {
+    background: var(--success);
+    color: white;
+}
+
+.btn-save.is-saved {
+    color: var(--danger);
+    border-color: var(--danger);
+}
+
+.btn-save.is-saved:hover:not(:disabled) {
+    background: var(--danger);
+    color: white;
+}
+
+/* ── Saved schedules panel ──────────────────────────── */
+.saved-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    background: var(--bg);
+    border-radius: var(--radius);
+    margin-bottom: 4px;
+    cursor: pointer;
+    transition: background var(--transition);
+    position: relative;
+}
+
+.saved-item:last-child {
+    margin-bottom: 0;
+}
+
+.saved-item:hover {
+    background: var(--border);
+}
+
+.saved-item.active {
+    border-left: 3px solid var(--accent);
+}
+
+.saved-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.saved-name {
+    color: var(--text);
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.saved-meta {
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    white-space: nowrap;
+    position: absolute;
+    right: 10px;
+    opacity: 1;
+    transition: opacity var(--transition);
+}
+
+.saved-item:hover .saved-meta {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.saved-rename,
+.saved-remove {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 0 2px;
+    line-height: 1;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity var(--transition);
+}
+
+.saved-item:hover .saved-rename,
+.saved-item:hover .saved-remove {
+    opacity: 1;
+}
+
+.saved-rename:hover {
+    color: var(--accent);
+}
+
+.saved-remove {
+    font-size: 1rem;
+}
+
+.saved-remove:hover {
+    color: var(--danger);
+}
+
+/* ── Schedule info bar ───────────────────────────────── */
+.schedule-info {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    background: var(--surface-2);
+    border-radius: var(--radius);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.schedule-info .info-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.unique-num {
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: color var(--transition);
+}
+
+.unique-num:hover {
+    color: var(--accent);
+}
+
+.unique-num.copied {
+    color: var(--success);
+}
+
+.schedule-info .info-color {
+    width: 10px;
+    height: 10px;
+    border-radius: var(--radius-sm);
+}
+
+/* ── Inline validation error ───────────────────────── */
+.input-error {
+    font-size: 0.78rem;
+    color: var(--danger);
+    margin-top: 2px;
+    display: block;
+}
+
+/* ── Toast notifications ───────────────────────────── */
+.toast-container {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+}
+
+.toast {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 10px 16px;
+    font-size: 0.85rem;
+    line-height: 1;
+    color: var(--text);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    pointer-events: auto;
+    animation: toast-in 0.2s ease;
+    white-space: nowrap;
+}
+
+.toast.toast-out {
+    animation: toast-out 0.2s ease forwards;
+}
+
+@keyframes toast-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes toast-out {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(12px); }
+}
+
+.toast-undo {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-size: 0.85rem;
+    line-height: 1;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+}
+
+.toast-undo:hover {
+    text-decoration: underline;
+}
+
+/* ── Loading progress ──────────────────────────────── */
+.progress-bar {
+    width: 100%;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    animation: progress-indeterminate 1.5s ease infinite;
+    width: 30%;
+}
+
+@keyframes progress-indeterminate {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(400%); }
+}
+
+/* ── Auth panel when not connected ─────────────────── */
+.auth-panel-v2.needs-auth {
+    order: -1;
+    border-color: var(--accent);
+    background: rgba(191, 87, 0, 0.08);
+}
+
+/* ── Empty state guided ────────────────────────────── */
+.empty-state-title {
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.empty-state-steps {
+    text-align: left;
+    font-size: 0.9rem;
+    line-height: 2.2;
+    color: var(--text-muted);
+    padding-left: 20px;
+}
+
+.empty-state-steps strong {
+    color: var(--text);
+}
+
+/* ── Break day checkboxes ──────────────────────────── */
+.break-days {
+    display: flex;
+    gap: 2px;
+    flex-wrap: wrap;
+}
+
+.break-day-toggle {
+    cursor: pointer;
+}
+
+.break-day-toggle input {
+    display: none;
+}
+
+.break-day-toggle span {
+    display: inline-block;
+    width: 24px;
+    text-align: center;
+    padding: 2px 0;
+    border-radius: var(--radius-sm);
+    font-size: 0.65rem;
+    font-weight: 500;
+    background: var(--bg);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    transition: all var(--transition);
+}
+
+.break-day-toggle input:checked + span {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+
+.break-times {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+}
+
+/* ── Compare nav inline ────────────────────────────── */
+.compare-nav-inline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin-bottom: 8px;
+}

@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+browser-data/
+grade-data/
+.env
+venv/
+.venv/
+debug_html.txt

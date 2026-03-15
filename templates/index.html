@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UT Schedule Planner</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23bf5700'/><text x='16' y='23' font-size='20' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'>S</text></svg>">
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>UT Schedule Planner</h1>
+        <select id="semesterSelect" class="semester-select"></select>
+    </header>
+
+    <main>
+        <!-- Left Panel: Course Input -->
+        <aside class="sidebar">
+            <div class="panel">
+                <h2>Courses</h2>
+                <div class="input-group">
+                    <input type="text" id="courseInput" placeholder='e.g. CS 314, M 408D' autocomplete="off">
+                    <button id="addCourseBtn" class="btn btn-primary">Add</button>
+                </div>
+                <span id="inputError" class="input-error"></span>
+                <button id="searchBtn" class="btn btn-nav" style="width:100%; margin-bottom:8px">Search for courses</button>
+                <ul id="courseList" class="course-list"></ul>
+                <div id="totalHours" class="total-hours hidden"></div>
+            </div>
+
+            <div class="panel hidden" id="professorFilterPanel">
+                <h2>Professor Filters</h2>
+                <div id="professorFilters"></div>
+            </div>
+
+            <div class="panel">
+                <h2>Options</h2>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="includeClosedCb">
+                    Include closed sections
+                </label>
+
+                <div class="option-section">
+                    <label class="option-label">Days off</label>
+                    <div class="day-off-row">
+                        <label class="day-toggle"><input type="checkbox" data-day="M"><span>M</span></label>
+                        <label class="day-toggle"><input type="checkbox" data-day="T"><span>T</span></label>
+                        <label class="day-toggle"><input type="checkbox" data-day="W"><span>W</span></label>
+                        <label class="day-toggle"><input type="checkbox" data-day="TH"><span>Th</span></label>
+                        <label class="day-toggle"><input type="checkbox" data-day="F"><span>F</span></label>
+                    </div>
+                </div>
+
+                <div class="option-section">
+                    <label class="option-label">Time window</label>
+                    <div class="time-range-row">
+                        <select id="timeStart" class="time-select">
+                            <option value="">No limit</option>
+                        </select>
+                        <span class="time-sep">to</span>
+                        <select id="timeEnd" class="time-select">
+                            <option value="">No limit</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="option-section">
+                    <label class="option-label">Breaks</label>
+                    <div id="breaksList" class="breaks-list"></div>
+                    <button id="addBreakBtn" class="btn btn-small" style="width:100%; margin-top:4px">+ Add break</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <button id="generateBtn" class="btn btn-generate">Generate Schedules</button>
+                <div id="statusArea" class="status-area"></div>
+            </div>
+
+            <div class="panel hidden" id="savedPanel">
+                <h2>Saved Schedules</h2>
+                <div id="savedList"></div>
+            </div>
+
+            <div class="panel auth-panel-v2 needs-auth">
+                <div id="authStatus" class="auth-status">
+                    <span class="auth-dot disconnected"></span>
+                    <span id="authText">Not connected</span>
+                </div>
+                <p id="authHelp" class="auth-help">
+                    A Chrome window will open for login. You only need to do this once — the session is saved.
+                </p>
+                <button id="loginBtn" class="btn btn-primary" style="width:100%">Connect to UT</button>
+            </div>
+        </aside>
+
+        <!-- Main Content: Schedule Display -->
+        <section class="content">
+            <!-- Schedule navigation bar -->
+            <div id="scheduleNav" class="schedule-nav hidden">
+                <div class="nav-row">
+                    <div class="nav-controls">
+                        <button id="prevBtn" class="btn btn-nav">&larr; Prev</button>
+                        <span id="scheduleCounter" class="schedule-counter">Schedule 1 of 1</span>
+                        <button id="nextBtn" class="btn btn-nav">Next &rarr;</button>
+                    </div>
+                    <div class="nav-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="compareCb">
+                            Compare side by side
+                        </label>
+                        <select id="sortSelect" class="sort-select">
+                            <option value="default">Default order</option>
+                            <option value="earliest">Earliest start</option>
+                            <option value="latest">Latest start</option>
+                            <option value="compact">Most compact</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="nav-actions">
+                    <button id="saveBtn" class="btn btn-save" title="Save this schedule">Save</button>
+                    <button id="exportIcsBtn" class="btn btn-nav" title="Export to calendar (.ics)">Export to Google Calendar</button>
+                    <button id="copyUniquesBtn" class="btn btn-nav" title="Copy all unique numbers">Copy Unique #s</button>
+                    <button id="backToResultsBtn" class="btn btn-nav hidden">Back to results</button>
+                </div>
+            </div>
+
+            <!-- Calendar container(s) -->
+            <div id="calendarsContainer" class="calendars-container">
+                <div class="empty-state" id="emptyState">
+                    <div>
+                        <p class="empty-state-title">Plan your schedule</p>
+                        <ol class="empty-state-steps">
+                            <li>Connect to UT (in the sidebar)</li>
+                            <li>Add courses — e.g. <strong>CS 314</strong>, <strong>M 408D</strong></li>
+                            <li>Click <strong>Generate Schedules</strong></li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Search Modal -->
+    <div id="searchModal" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Search Courses</h2>
+                <button id="searchModalClose" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="search-tabs">
+                    <button class="search-tab active" data-tab="keyword">Keyword</button>
+                    <button class="search-tab" data-tab="instructor">Instructor</button>
+                </div>
+                <div class="search-tab-content active" data-tab="keyword">
+                    <div class="input-group">
+                        <input type="text" id="searchKeywordInput" placeholder="e.g. algorithms, data structures, calculus" autocomplete="off">
+                        <button class="btn btn-primary search-go-btn">Search</button>
+                    </div>
+                </div>
+                <div class="search-tab-content" data-tab="instructor">
+                    <div class="input-group">
+                        <input type="text" id="searchInstructorInput" placeholder="e.g. Orshansky, Scott, Ghosh" autocomplete="off">
+                        <button class="btn btn-primary search-go-btn">Search</button>
+                    </div>
+                </div>
+                <div id="searchStatus" class="status-area"></div>
+                <div id="searchResults" class="search-results"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom prompt modal -->
+    <div id="promptModal" class="modal-overlay hidden">
+        <div class="modal prompt-modal">
+            <div class="modal-header">
+                <h2 id="promptTitle">Input</h2>
+                <button id="promptClose" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="promptFields"></div>
+                <div id="promptError" class="prompt-error hidden"></div>
+                <div class="prompt-actions">
+                    <button id="promptCancel" class="btn btn-nav">Cancel</button>
+                    <button id="promptOk" class="btn btn-primary">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="/static/js/api.js"></script>
+    <script src="/static/js/calendar.js"></script>
+    <script src="/static/js/courseInput.js"></script>
+    <script src="/static/js/scheduleViewer.js"></script>
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
