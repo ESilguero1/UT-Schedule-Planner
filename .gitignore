@@ -5,4 +5,5 @@ grade-data/
 .env
 venv/
 .venv/
+.claude/
 debug_html.txt

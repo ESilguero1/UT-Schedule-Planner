@@ -4,6 +4,10 @@ Did anyone else notice that UT's official schedule planner just... vanished? No 
 
 This is a local app that scrapes the UT course registrar and generates every valid, conflict-free schedule for your courses. Filter by professor, compare options side by side, check grade distributions, and export straight to Google Calendar.
 
+## Download
+
+Click the green **Code** button at the top of this page, then **Download ZIP**. Extract it anywhere.
+
 ## Quick Start
 
 ### Windows
