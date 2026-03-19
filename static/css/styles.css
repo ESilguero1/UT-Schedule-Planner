@@ -564,6 +564,23 @@ main {
     color: var(--danger);
 }
 
+.status-area .status-changes {
+    list-style: none;
+    margin-top: 4px;
+    padding-left: 8px;
+    font-size: 0.8rem;
+}
+
+.status-area .status-changes li {
+    color: var(--text);
+    padding: 2px 0;
+}
+
+.status-area .status-changes li::before {
+    content: "- ";
+    color: var(--accent);
+}
+
 .status-area .spinner {
     display: inline-block;
     width: 14px;

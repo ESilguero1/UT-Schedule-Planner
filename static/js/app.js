@@ -155,6 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const savedList = document.getElementById('savedList');
     const saveBtn = document.getElementById('saveBtn');
     const backToResultsBtn = document.getElementById('backToResultsBtn');
+    const refreshStatusBtn = document.getElementById('refreshStatusBtn');
 
     // ── Semester selector ────────────────────────────────
     function buildSemesterOptions() {
@@ -1164,9 +1165,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (viewingSaved) {
             saveBtn.classList.add('hidden');
             backToResultsBtn.classList.remove('hidden');
+            refreshStatusBtn.classList.remove('hidden');
             return;
         }
         backToResultsBtn.classList.add('hidden');
+        refreshStatusBtn.classList.add('hidden');
         const idx = currentSavedIndex();
         if (idx >= 0) {
             saveBtn.textContent = 'Unsave';
@@ -1348,6 +1351,103 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     backToResultsBtn.addEventListener('click', backToResults);
+
+    // ── Refresh Status (re-scrape to update open/closed/waitlisted) ──
+    refreshStatusBtn.addEventListener('click', async () => {
+        if (!viewingSaved || viewingSavedIndex < 0) return;
+
+        const saved = getSavedSchedules();
+        const s = saved[viewingSavedIndex];
+        if (!s) return;
+
+        // Use the course list that was saved with this schedule
+        const courses = s.courses || [];
+        if (courses.length === 0) {
+            showStatus('No course data saved with this schedule.', 'error');
+            return;
+        }
+
+        refreshStatusBtn.disabled = true;
+        refreshStatusBtn.textContent = 'Refreshing...';
+        showStatus('<span class="spinner"></span> Refreshing section statuses...', '', true);
+
+        try {
+            // Ensure we're authenticated
+            const auth = await API.checkAuth();
+            if (!auth.authenticated) {
+                showStatus('<span class="spinner"></span> Verifying session...', '', true);
+                const loginResult = await API.login();
+                if (!loginResult.success) {
+                    showStatus('Not logged in. Connect to UT first.', 'error');
+                    refreshStatusBtn.disabled = false;
+                    refreshStatusBtn.textContent = 'Refresh Status';
+                    return;
+                }
+                setAuthStatus(true);
+            }
+
+            // Clear cache so we get fresh data from the registrar
+            await API.clearCache();
+            lastScrapeData = null;
+            const scrapeResult = await API.scrapeCourses(courses, getSelectedSemester());
+            if (!scrapeResult.success) {
+                showStatus('Refresh error: ' + (scrapeResult.error || 'Unknown'), 'error');
+                refreshStatusBtn.disabled = false;
+                refreshStatusBtn.textContent = 'Refresh Status';
+                return;
+            }
+
+            // Build a lookup from unique number to new status
+            const statusMap = {};
+            scrapeResult.courses.forEach(course => {
+                (course.sections || []).forEach(sec => {
+                    statusMap[sec.uniqueNumber] = sec.status || 'open';
+                    // Also update linked sections
+                    (sec.linkedSections || []).forEach(ls => {
+                        statusMap[ls.uniqueNumber] = ls.status || 'open';
+                    });
+                });
+            });
+
+            // Update saved schedule sections with new statuses
+            const changes = [];
+            s.sections.forEach(sec => {
+                const newStatus = statusMap[sec.uniqueNumber];
+                if (newStatus && newStatus !== sec.status) {
+                    changes.push(`${sec.courseName} (#${sec.uniqueNumber}): ${sec.status} → ${newStatus}`);
+                    sec.status = newStatus;
+                }
+                (sec.linkedSections || []).forEach(ls => {
+                    const lsStatus = statusMap[ls.uniqueNumber];
+                    if (lsStatus && lsStatus !== ls.status) {
+                        changes.push(`${sec.courseName} linked (#${ls.uniqueNumber}): ${ls.status} → ${lsStatus}`);
+                        ls.status = lsStatus;
+                    }
+                });
+            });
+
+            // Persist updated saved schedule
+            setSavedSchedules(saved);
+
+            // Re-render the saved schedule view
+            ScheduleViewer.setSchedules([s.sections], s.colorMap, getSelectedSemester());
+            const label = s.name || `Schedule ${viewingSavedIndex + 1}`;
+            document.getElementById('scheduleCounter').textContent =
+                `${label} (${viewingSavedIndex + 1} of ${saved.length})`;
+
+            if (changes.length > 0) {
+                const details = changes.map(c => `<li>${c}</li>`).join('');
+                showStatus(`<span class="success">Updated ${changes.length} section(s):</span><ul class="status-changes">${details}</ul>`, '');
+            } else {
+                showStatus('All section statuses are up to date.', 'success');
+            }
+        } catch (e) {
+            showStatus('Refresh error: ' + e.message, 'error');
+        } finally {
+            refreshStatusBtn.disabled = false;
+            refreshStatusBtn.textContent = 'Refresh Status';
+        }
+    });
 
     // Sync save button when navigating between schedules
     ScheduleViewer.onChange(() => syncSaveButton());
