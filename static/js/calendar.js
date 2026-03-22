@@ -42,8 +42,10 @@ const Calendar = (() => {
      * @param {HTMLElement} container - DOM element to render into
      * @param {Function} colorFn - Function(courseName) -> CSS color string
      * @param {string} semesterCode - Semester code for registrar links (e.g. '20269')
+     * @param {Object} lockedSections - Map of courseName -> locked uniqueNumber
+     * @param {Function} onLockToggle - Callback(courseName, uniqueNumber) when lock clicked
      */
-    function render(sections, container, colorFn, semesterCode) {
+    function render(sections, container, colorFn, semesterCode, lockedSections, onLockToggle) {
         container.innerHTML = '';
 
         const grid = document.createElement('div');
@@ -111,6 +113,8 @@ const Calendar = (() => {
                 const statusClass = /closed|waitlisted/i.test(status) ? 'block-status-bad' : 'block-status-default';
                 const statusBadge = `<span class="block-status ${statusClass}">${status}</span>`;
 
+                const isLocked = lockedSections && lockedSections[block.courseName] === block.uniqueNumber;
+
                 el.innerHTML = `
                     ${statusBadge}
                     <div class="block-title">${block.courseName}</div>
@@ -119,6 +123,20 @@ const Calendar = (() => {
                     <div class="block-instructor">${block.instructor || ''}</div>
                     <div class="block-unique">#${block.uniqueNumber}</div>
                 `;
+
+                // Lock button — only show on non-linked blocks
+                if (!block.isLinked && onLockToggle) {
+                    const lockBtn = document.createElement('button');
+                    lockBtn.className = 'block-lock-btn' + (isLocked ? ' locked' : '');
+                    lockBtn.title = isLocked ? 'Click to unlock this section' : 'Click to lock this section';
+                    lockBtn.textContent = isLocked ? '🔒' : '🔓';
+                    lockBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        onLockToggle(block.courseName, block.uniqueNumber);
+                    });
+                    el.appendChild(lockBtn);
+                }
 
                 const copyBtn = el.querySelector('.block-unique');
                 copyBtn.addEventListener('click', e => {

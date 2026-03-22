@@ -1684,3 +1684,36 @@ main {
     border-radius: var(--radius-lg);
     margin-bottom: 8px;
 }
+
+/* ── Calendar block lock button ────────────────────── */
+.block-lock-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(0, 0, 0, 0.35);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.7rem;
+    padding: 1px 3px;
+    line-height: 1.4;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 2;
+}
+
+.course-block:hover .block-lock-btn {
+    opacity: 1;
+}
+
+.block-lock-btn.locked {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.55);
+}
+
+.info-lock-badge {
+    font-size: 0.75rem;
+    margin-left: 3px;
+    vertical-align: middle;
+    opacity: 0.85;
+}
