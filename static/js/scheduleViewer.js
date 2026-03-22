@@ -10,11 +10,15 @@ const ScheduleViewer = (() => {
     let courseColorMap = {};
     let semesterCode = '20269';
     let onChangeCallback = null;
+    let lockedSectionsRef = {};
+    let onLockToggleRef = null;
 
-    function setSchedules(newSchedules, colorMap, semester) {
+    function setSchedules(newSchedules, colorMap, semester, locked, onLockToggle) {
         schedules = newSchedules;
         courseColorMap = colorMap;
         if (semester) semesterCode = semester;
+        lockedSectionsRef = locked || {};
+        onLockToggleRef = onLockToggle || null;
         currentIndex = 0;
         compareIndex = Math.min(1, schedules.length - 1);
         renderCurrent();
@@ -117,7 +121,7 @@ const ScheduleViewer = (() => {
         const wrapper1 = document.createElement('div');
         wrapper1.className = 'calendar-wrapper';
 
-        Calendar.render(schedules[currentIndex], wrapper1, getColorForCourse, semesterCode);
+        Calendar.render(schedules[currentIndex], wrapper1, getColorForCourse, semesterCode, lockedSectionsRef, onLockToggleRef);
         // Info bar goes after render (render clears container)
         const info1 = buildInfoBar(schedules[currentIndex]);
         wrapper1.prepend(info1);
@@ -142,7 +146,7 @@ const ScheduleViewer = (() => {
             compareNavEl.querySelector('#nextBtn2').addEventListener('click', () => navigate(1, true));
             wrapper2.appendChild(compareNavEl);
 
-            Calendar.render(schedules[compareIndex], wrapper2, getColorForCourse, semesterCode);
+            Calendar.render(schedules[compareIndex], wrapper2, getColorForCourse, semesterCode, lockedSectionsRef, onLockToggleRef);
             const info2 = buildInfoBar(schedules[compareIndex]);
             // Insert info bar after the nav but before the calendar grid
             const grid2 = wrapper2.querySelector('.calendar-grid');
@@ -161,9 +165,11 @@ const ScheduleViewer = (() => {
             const status = section.status || 'open';
             const infoClass = /closed|waitlisted/i.test(status) ? 'info-status-bad' : 'info-status-default';
             const statusTag = ` <span class="info-status ${infoClass}">${status}</span>`;
+            const isLocked = lockedSectionsRef[section.courseName] === section.uniqueNumber;
+            const lockBadge = isLocked ? ' <span class="info-lock-badge" title="Section locked">🔒</span>' : '';
             item.innerHTML = `
                 <span class="info-color" style="background:${getColorForCourse(section.courseName)}"></span>
-                <span>${section.courseName} (<span class="unique-num" title="Click to copy">#${section.uniqueNumber}</span>)${statusTag}</span>
+                <span>${section.courseName} (<span class="unique-num" title="Click to copy">#${section.uniqueNumber}</span>)${statusTag}${lockBadge}</span>
             `;
             item.querySelector('.unique-num').addEventListener('click', () => {
                 navigator.clipboard.writeText(section.uniqueNumber);
