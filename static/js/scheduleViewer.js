@@ -165,11 +165,9 @@ const ScheduleViewer = (() => {
             const status = section.status || 'open';
             const infoClass = /closed|waitlisted/i.test(status) ? 'info-status-bad' : 'info-status-default';
             const statusTag = ` <span class="info-status ${infoClass}">${status}</span>`;
-            const isLocked = lockedSectionsRef[section.courseName] === section.uniqueNumber;
-            const lockBadge = isLocked ? ' <span class="info-lock-badge" title="Section locked">🔒</span>' : '';
             item.innerHTML = `
                 <span class="info-color" style="background:${getColorForCourse(section.courseName)}"></span>
-                <span>${section.courseName} (<span class="unique-num" title="Click to copy">#${section.uniqueNumber}</span>)${statusTag}${lockBadge}</span>
+                <span>${section.courseName} (<span class="unique-num" title="Click to copy">#${section.uniqueNumber}</span>)${statusTag}</span>
             `;
             item.querySelector('.unique-num').addEventListener('click', () => {
                 navigator.clipboard.writeText(section.uniqueNumber);

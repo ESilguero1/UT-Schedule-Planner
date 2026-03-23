@@ -93,6 +93,7 @@ const Calendar = (() => {
             getAllBlocks(sections, day).forEach(block => {
                 const el = document.createElement('a');
                 el.className = 'course-block';
+                el.dataset.unique = block.uniqueNumber;
                 el.href = `https://utdirect.utexas.edu/apps/registrar/course_schedule/${semesterCode || '20269'}/${block.uniqueNumber}/`;
                 el.target = '_blank';
                 el.rel = 'noopener';
@@ -124,12 +125,14 @@ const Calendar = (() => {
                     <div class="block-unique">#${block.uniqueNumber}</div>
                 `;
 
-                // Lock button — only show on non-linked blocks
-                if (!block.isLinked && onLockToggle) {
+                // Lock button
+                if (onLockToggle) {
                     const lockBtn = document.createElement('button');
                     lockBtn.className = 'block-lock-btn' + (isLocked ? ' locked' : '');
                     lockBtn.title = isLocked ? 'Click to unlock this section' : 'Click to lock this section';
-                    lockBtn.textContent = isLocked ? '🔒' : '🔓';
+                    lockBtn.innerHTML = isLocked
+                        ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1"/></svg>'
+                        : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0" transform="translate(4,-2)"/></svg>';
                     lockBtn.addEventListener('click', (e) => {
                         e.preventDefault();
                         e.stopPropagation();
@@ -149,6 +152,14 @@ const Calendar = (() => {
                 });
 
                 el.title = `${block.courseName}\n${formatTime12(block.startTime)} - ${formatTime12(block.endTime)}\n${block.location || 'TBA'}\n${block.instructor || ''}\nUnique: ${block.uniqueNumber || ''}`;
+
+                // Show lock on all sibling blocks (same unique number) on hover
+                el.addEventListener('mouseenter', () => {
+                    document.querySelectorAll(`.course-block[data-unique="${block.uniqueNumber}"] .block-lock-btn`).forEach(btn => btn.classList.add('sibling-hover'));
+                });
+                el.addEventListener('mouseleave', () => {
+                    document.querySelectorAll('.block-lock-btn.sibling-hover').forEach(btn => btn.classList.remove('sibling-hover'));
+                });
 
                 col.appendChild(el);
             });
