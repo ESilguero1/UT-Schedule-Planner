@@ -212,6 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
         lastGenResult = null;
         lastColorMap = null;
         lastGradeData = null;
+        lockedSections = {};
         viewingSaved = false;
         professorFilterPanel.classList.add('hidden');
         ScheduleViewer.setSchedules([], {}, semesterSelect.value);
@@ -229,6 +230,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastColorMap = null;
     let viewingSaved = false;
     let lastGradeData = null; // grade distributions keyed by "PREFIX NUMBER"
+    // lockedSections: maps courseName -> uniqueNumber (one lock per course, or null)
+    let lockedSections = {};
 
 
 
@@ -252,6 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Clear scrape cache and refresh search buttons whenever course list changes
     CourseInput.onChange(() => {
         lastScrapeData = null;
+        lockedSections = {};
         professorFilterPanel.classList.add('hidden');
         // Re-enable search Add buttons for courses no longer in the list
         const existing = CourseInput.getCourses();
@@ -568,6 +572,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="prof-sections">(${count})</span>
                     ${rmpLink}
                 `;
+
                 list.appendChild(label);
             });
 
@@ -603,6 +608,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         return courseData.map(course => {
+            // If this course has a locked section, only include that one section
+            const lockedUnique = lockedSections[course.courseName];
+            if (lockedUnique) {
+                return course.sections.filter(s => s.uniqueNumber === lockedUnique);
+            }
+
             const filter = allowed[course.courseName];
             if (!filter || !filter.hasAny) return course.sections;
             return course.sections.filter(s => {
@@ -754,6 +765,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // ── Lock toggle handler (called from calendar block clicks) ──
+    function handleLockToggle(courseName, uniqueNumber) {
+        if (lockedSections[courseName] === uniqueNumber) {
+            delete lockedSections[courseName];
+        } else {
+            lockedSections[courseName] = uniqueNumber;
+        }
+        regenerateFromFilters();
+    }
+
     // ── Schedule result display ────────────────────────────
     function showScheduleResult(genResult, colorMap) {
         lastGenResult = genResult;
@@ -793,7 +814,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         showStatus(msg, '');
-        ScheduleViewer.setSchedules(filtered, colorMap, getSelectedSemester());
+        ScheduleViewer.setSchedules(filtered, colorMap, getSelectedSemester(), lockedSections, handleLockToggle);
         syncSaveButton();
     }
 
