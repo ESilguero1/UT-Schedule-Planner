@@ -106,6 +106,7 @@ class Scraper:
     def __init__(self):
         self._authenticated = False
         self._browser_launched = False
+        self._launch_error = None
         self._course_cache = {}
         # Playwright thread + queue
         self._thread = None
@@ -116,18 +117,23 @@ class Scraper:
     def _pw_thread_main(self):
         """Dedicated thread that owns all Playwright objects."""
         log("Playwright thread started")
-        os.makedirs(BROWSER_DATA_DIR, exist_ok=True)
-        pw = sync_playwright().start()
-        context = pw.chromium.launch_persistent_context(
-            BROWSER_DATA_DIR,
-            headless=False,
-            channel="chrome",
-            viewport={"width": 1280, "height": 900},
-            args=["--window-position=200,100", "--window-size=1300,900"],
-        )
-        page = context.pages[0] if context.pages else context.new_page()
-        self._browser_launched = True
-        log("Chrome launched")
+        try:
+            os.makedirs(BROWSER_DATA_DIR, exist_ok=True)
+            pw = sync_playwright().start()
+            context = pw.chromium.launch_persistent_context(
+                BROWSER_DATA_DIR,
+                headless=False,
+                channel="chrome",
+                viewport={"width": 1280, "height": 900},
+                args=["--window-position=200,100", "--window-size=1300,900"],
+            )
+            page = context.pages[0] if context.pages else context.new_page()
+            self._browser_launched = True
+            log("Chrome launched")
+        except Exception as e:
+            log(f"Failed to launch Chrome: {e}")
+            self._launch_error = e
+            return
 
         # Process commands from the queue
         while True:
@@ -144,20 +150,45 @@ class Scraper:
         pw.stop()
         log("Playwright thread stopped")
 
+    @staticmethod
+    def _is_browser_closed_error(error):
+        """Check if an error indicates the browser/page was closed."""
+        msg = str(error).lower()
+        return any(phrase in msg for phrase in [
+            "has been closed",
+            "target closed",
+            "connection closed",
+            "browser closed",
+            "not connected",
+        ])
+
+    def _start_browser_thread(self):
+        """Start a fresh Playwright thread and wait for browser launch."""
+        self._browser_launched = False
+        self._launch_error = None
+        self._queue = Queue()  # fresh queue in case old one had stale items
+        self._thread = threading.Thread(target=self._pw_thread_main, daemon=True)
+        self._thread.start()
+        import time
+        while not self._browser_launched:
+            if not self._thread.is_alive():
+                err = getattr(self, '_launch_error', None)
+                raise Exception(f"Failed to launch Chrome: {err or 'thread exited unexpectedly'}")
+            time.sleep(0.1)
+
     def _run_on_pw_thread(self, func, *args):
         """Send a function to the Playwright thread and wait for the result."""
         if not self._thread or not self._thread.is_alive():
-            self._thread = threading.Thread(target=self._pw_thread_main, daemon=True)
-            self._thread.start()
-            # Wait for browser to launch
-            while not self._browser_launched:
-                import time
-                time.sleep(0.1)
+            self._start_browser_thread()
 
         result_q = Queue()
         self._queue.put((func, args, result_q))
         status, result = result_q.get()
         if status == "error":
+            # If browser was closed/crashed, reset thread so next call restarts fresh
+            if self._is_browser_closed_error(result):
+                log(f"Browser closed unexpectedly: {result}")
+                self._stop_thread()
             raise result
         return result
 
@@ -402,14 +433,20 @@ class Scraper:
 
     def verify_session(self):
         """Launch browser and check if the saved session is still valid.
-        Does NOT wait for the user to log in — just returns True/False."""
+        Does NOT wait for the user to log in — just returns True/False.
+        If the session is expired, closes the browser so that a fresh
+        login attempt launches Chrome cleanly (visible, in foreground)."""
         try:
             is_valid = self._run_on_pw_thread(self._cmd_verify_session)
             self._authenticated = is_valid
+            if not is_valid:
+                log("Session expired — closing browser for clean re-login")
+                self.close()
             return is_valid
         except Exception as e:
             log(f"Session verification error: {e}")
             self._authenticated = False
+            self.close()
             return False
 
     @staticmethod
@@ -522,10 +559,17 @@ class Scraper:
     def clear_cache(self):
         self._course_cache = {}
 
-    def close(self):
+    def _stop_thread(self):
+        """Stop the Playwright thread and reset state for fresh restart."""
         if self._thread and self._thread.is_alive():
-            self._queue.put(("stop", (), None))
-            self._thread.join(timeout=10)
+            try:
+                self._queue.put(("stop", (), None))
+                self._thread.join(timeout=10)
+            except Exception:
+                pass
         self._thread = None
-        self._authenticated = False
         self._browser_launched = False
+
+    def close(self):
+        self._stop_thread()
+        self._authenticated = False

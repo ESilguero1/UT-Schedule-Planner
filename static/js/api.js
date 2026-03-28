@@ -62,4 +62,9 @@ const API = {
         });
         return res.json();
     },
+
+    async shutdown() {
+        const res = await fetch('/api/shutdown', { method: 'POST' });
+        return res.json();
+    },
 };

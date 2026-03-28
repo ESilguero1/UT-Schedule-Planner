@@ -3,6 +3,9 @@ Flask web server for UT Austin Schedule Planner.
 Connects to the user's running Chrome via CDP for scraping.
 """
 
+import os
+import signal
+
 from flask import Flask, render_template, jsonify, request
 
 from scraper import Scraper
@@ -193,6 +196,21 @@ def refresh_grades():
         return jsonify({"success": success})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
+
+
+# ── Shutdown ───────────────────────────────────────────────
+
+@app.route("/api/shutdown", methods=["POST"])
+def shutdown():
+    """Gracefully shut down the server, browser, and all background threads."""
+    log("Shutdown requested from UI")
+    scraper.close()
+    # Send response before killing the process
+    response = jsonify({"success": True, "message": "Shutting down..."})
+    # Use os._exit in a background thread to let the response flush first
+    import threading
+    threading.Timer(0.5, lambda: os._exit(0)).start()
+    return response
 
 
 # ── Debug ──────────────────────────────────────────────────

@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const authHelp = document.getElementById('authHelp');
     const professorFilterPanel = document.getElementById('professorFilterPanel');
     const professorFiltersDiv = document.getElementById('professorFilters');
+    const quitBtn = document.getElementById('quitBtn');
 
     const timeStartSelect = document.getElementById('timeStart');
     const timeEndSelect = document.getElementById('timeEnd');
@@ -334,6 +335,18 @@ document.addEventListener('DOMContentLoaded', () => {
         } finally {
             loginBtn.disabled = false;
         }
+    });
+
+    // ── Quit button ──────────────────────────────────────
+    if (quitBtn) quitBtn.addEventListener('click', async () => {
+        quitBtn.disabled = true;
+        quitBtn.textContent = 'Shutting down...';
+        try {
+            await API.shutdown();
+        } catch (e) {
+            // Server killed itself — expected
+        }
+        document.body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;color:#888"><p>App stopped. You can close this tab.</p></div>';
     });
 
     // ── Professor filter helpers ─────────────────────────

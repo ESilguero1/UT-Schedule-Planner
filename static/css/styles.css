@@ -220,6 +220,21 @@ main {
     background: var(--accent-hover);
 }
 
+.btn-quit {
+    margin-left: auto;
+    background: var(--surface-2);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+    font-size: 0.8rem;
+}
+
+.btn-quit:hover {
+    background: var(--danger, #ef4444);
+    color: white;
+    border-color: var(--danger, #ef4444);
+}
+
 .btn-nav {
     background: var(--surface-2);
     color: var(--text);
